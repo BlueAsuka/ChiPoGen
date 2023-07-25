@@ -1,0 +1,3 @@
+# ignore all training models weights
+*.pth
+*.pt
