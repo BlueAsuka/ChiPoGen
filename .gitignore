@@ -5,3 +5,6 @@
 # ignore all .csv and .txt
 *.csv
 *.txt
+
+# ignore all .bin files
+*.bin
