@@ -1,2 +1,2 @@
 # ChiPoGen
- A Chinese poems generator 
+ A Chinese poems generator using GPT-based language model
