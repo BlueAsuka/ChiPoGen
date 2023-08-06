@@ -1,6 +1,7 @@
 # ignore all training models weights
 *.pth
 *.pt
+*.pyc
 
 # ignore all .csv and .txt
 *.csv
