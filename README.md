@@ -22,9 +22,9 @@ The model uses a standard decoder-only transformer [GPT2](https://paperswithcode
 Note that the vocab_size of the final output layer is the total number of all chars in the Chinese potery dataset which is different from the standard implmentation of the GPT2 (vocab_size=50257). After the data processing, there are totally 12966 Chinese chars in the dataset, and this number is chosen to be the vocab_size in the output layer.
 
 ## Model training
-It takes around 1 hour for finishing the whole model training on an RTX 4070 (12G VRAM) GPU. The final evaluation loss is 3.8169.
+It takes around 1 hour for finishing the model training on 5 epochs on an RTX 4070 (12G VRAM) GPU. The final evaluation loss is 3.8169.
 
 ![](assests/val_loss.png)
 
-##
+## Model scaling
 The model can be scaled to a larger size with a larger block_size and n_embd. This will be a TODO in the future.
