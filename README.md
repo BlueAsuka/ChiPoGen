@@ -10,12 +10,15 @@
  ![](assests/poetry_generated_sample.PNG)
 
  ## Model details
-The model is a standard decoder-only transformer with the following parameters
+The model uses a standard decoder-only transformer [GPT2](https://paperswithcode.com/paper/language-models-are-unsupervised-multitask) with the following parameters. Note that the vocab_size of the final output layer is the total number of all chars in the Chinese potery dataset which is different from the standard implmentation of the GPT2 (vocab_size=50257). After the data processing, there are totally 12966 Chinese chars in the dataset, and this number is chosen to be the vocab_size in the output layer.
+
+Other hyperparameters are listed as followed:
 
     "batch_size": 12,
     "block_size": 128,
     "vocab_size": 12966,
     "n_embd" : 384,
     "n_head" : 12,
-    "n_layer": 12,
-    "dropout": 0.0 
+    "n_layer": 12
+
+Total number of model parameters is 26.22 million.
