@@ -18,7 +18,7 @@ The model uses a standard decoder-only transformer [GPT2](https://paperswithcode
     "n_embd" : 384,
     "n_head" : 12,
     "n_layer": 12
-
+    
 Note that the vocab_size of the final output layer is the total number of all chars in the Chinese potery dataset which is different from the standard implmentation of the GPT2 (vocab_size=50257). After the data processing, there are totally 12966 Chinese chars in the dataset, and this number is chosen to be the vocab_size in the output layer.
 
 ## Model training

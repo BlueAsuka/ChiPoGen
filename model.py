@@ -1,11 +1,15 @@
-import math
+"""
+Full definition of a GPT Language Model, all of it in this single file.
+References:
+1) the nanoGPT developed by karpathy Andrej:
+https://github.com/karpathy/nanoGPT/blob/master/model.py
+Remove the DDP part 
+"""
 
+import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
-
-
 
 #======================================================
 # All building blocks for the GPT: LayerNorm, Self Attention and MLP 

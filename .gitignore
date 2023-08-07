@@ -3,9 +3,8 @@
 *.pt
 *.pyc
 
-# ignore all .csv and .txt
+# ignore all .csv
 *.csv
-*.txt
 
 # ignore all .bin files
 *.bin
