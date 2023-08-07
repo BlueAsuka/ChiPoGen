@@ -9,5 +9,6 @@
 # ignore all .bin files
 *.bin
 
-# ignore the wandb folder
+# ignore the some folders
 wandb/
+.vscode/
