@@ -11,6 +11,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+
 #======================================================
 # All building blocks for the GPT: LayerNorm, Self Attention and MLP 
 class LayerNorm(nn.Module):
