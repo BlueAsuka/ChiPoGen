@@ -1,6 +1,6 @@
 {
     "init_from": "resume",
-    "start": "春",
+    "start": "\n",
     "num_samples": 10,
     "max_new_tokens": 500,
     "temperature": 0.95,
