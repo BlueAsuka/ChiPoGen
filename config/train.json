@@ -1,15 +1,15 @@
 {
     "learning_rate": 6e-4,
-    "max_iters": 25000,
-    "lr_decay_iters": 20000,
+    "max_iters": 5500,
+    "lr_decay_iters": 5000,
     "min_lr": 6e-5,
     "weight_decay": 1e-1,
     "beta1": 0.9,
     "beta2": 0.95,
-    "warmup_iters": 500,
+    "warmup_iters": 100,
     "gradient_accumulation_steps": 40,
     "grad_clip": 1.0,
-    "eval_iters": 2000,
-    "eval_interval": 5000,
+    "eval_iters": 500,
+    "eval_interval": 1000,
     "log_interval": 100
 }

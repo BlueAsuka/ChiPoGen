@@ -9,3 +9,6 @@
 
 # ignore all .bin files
 *.bin
+
+# ignore the wandb folder
+wandb/

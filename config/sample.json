@@ -1,0 +1,9 @@
+{
+    "init_from": "resume",
+    "start": "春",
+    "num_samples": 10,
+    "max_new_tokens": 500,
+    "temperature": 0.95,
+    "top_k": 200,
+    "seed": 1337
+}

@@ -41,13 +41,13 @@ class SelfAttention(nn.Module):
     def forward(self, x):
         B, T, C = x.shape # batch_size, sequence length (block_size), embedding dimension (n_embd)
         
-        q, k, v = torch.split(self.c_attn(x), split_size_or_sections=self.n_embd, dim=2)
+        q, k, v = self.c_attn(x).split(self.n_embd, dim=2)
         q = q.view(B, T, self.n_head, C // self.n_head).transpose(1, 2)
         k = k.view(B, T, self.n_head, C // self.n_head).transpose(1, 2)
         v = v.view(B, T, self.n_head, C // self.n_head).transpose(1, 2)
         
         att = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(k.size(-1)))
-        att = att.masked_fill(mask=(self.bias[:, :, :self.block_size, :self.block_size] == 0), value=float('-inf'))
+        att = att.masked_fill(self.bias[:, :, :T, :T] == 0, float('-inf'))
         att = F.softmax(att, dim=-1)
         att = self.attn_dropout(att)
         
