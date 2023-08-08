@@ -18,13 +18,13 @@ import torch
 import torch.nn as nn
 
 
-# 'scratch for training from scratch
-# 'resume' for resume training from a checkpoint
+# 'scratch' : training from scratch
+# 'resume'  : resume training from a checkpoint
 init_from = 'scratch' 
 
 # create a checkpoints and params dir for internal or final result saving
-checkpoints_dir = 'checkpoints'
-params_dir = 'parmas'
+checkpoints_dir = 'checkpoint'
+params_dir = 'params'
 if not os.path.exists(checkpoints_dir):
     os.makedirs(checkpoints_dir)
 if not os.path.exists(params_dir):
@@ -162,7 +162,7 @@ def estimate_loss():
     return out
 
 def get_lr(it):
-    """ use cosine learning rate decay """
+    """ use cosine learning rate decay to get learning rate """
     
     # 1. linear warmup for warmup_iters steps
     if it < train_config.warmup_iters:
@@ -190,6 +190,7 @@ def estimate_mfu(model, fwdbwd_per_iter, dt):
     flops_promised = 22e12 # RTX 4070 GPU bfloat16 peak flops is 22.61 TFLOPS
     mfu = flops_achieved / flops_promised
     return mfu
+
 
 #=========================================
 # training initalization
