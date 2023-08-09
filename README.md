@@ -1,16 +1,47 @@
 # ChiPoGen
 
+
 ## Introduction
- A Chinese poems generator using GPT-based language model
+**ChiPoGen** (**Chi**nese **Po**etry **Gen**eration) : A Chinese poems generator using GPT2-based language model.
 
- Inspired by the [nanoGPT](https://github.com/karpathy/nanoGPT) developed by Anandrej Karpathyd , the same model structure is applied for training on a Chinese Poetry dataset collected in the [Chinese Potery Dataset](https://github.com/Werneror/Poetry), and then used for Chinese potery generation.
+Inspired by the [nanoGPT](https://github.com/karpathy/nanoGPT) developed by Anandrej Karpathy, the same model structure is applied for training on millions of Chinese poems collected in the [Chinese Potery Dataset](https://github.com/Werneror/Poetry), and then used for Chinese potery generation.
 
- Some generation samples are shown in the following figure:
+Some generation samples are shown in the following figure:
 
- ![](assests/poetry_generated_sample.PNG)
+![](assests/poetry_generated_sample.PNG)
 
- ## Model details
-The model uses a standard decoder-only transformer [GPT2](https://paperswithcode.com/paper/language-models-are-unsupervised-multitask) with the following hyperparameters. The total number of model parameters is 26.22 million.
+## Environment
+The main project is developed on Windows 10.0 with a CUDA capable GPU and still no testing on other OS such as MacOS or Linux. (Suppose there is a merely slight modification for making the model to run on the Linux with GPU, but may require some heavy magic work for MacOS)
+- Windows 10.0
+- python 3.10
+- RTX 4070
+
+## Setting up
+For this project, use `conda` to create a virtual environment for packages management. Run the following commands for the virtual environment setting up. 
+
+    conda create -n chipogen python=3.10
+    conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+    pip install -r requirments.txt
+
+## Running
+For training the model, configurate the two files in the `configs`:
+
+- `model.json`: the hyperparameters of the model architecture
+- `train.json`: the hyperparameters of the model training
+
+Then run the following command on the command line for model training:
+
+    python train.py
+
+After training the model, a new folder named `params` will be generated and the trained weight file (.pth) can be found in this folder. For generation, run the following command in command line:
+
+    python sample.py
+
+The output result will be saved as a .txt file in the new folder `out`.
+
+
+## Model details
+The model uses a standard decoder-only transformer [GPT2](https://paperswithcode.com/paper/language-models-are-unsupervised-multitask) with the following hyperparameters. The total number of model parameters is `26.22` million.
 
     "batch_size": 12,
     "block_size": 128,
@@ -19,12 +50,11 @@ The model uses a standard decoder-only transformer [GPT2](https://paperswithcode
     "n_head" : 12,
     "n_layer": 12
     
-Note that the vocab_size of the final output layer is the total number of all chars in the Chinese potery dataset which is different from the standard implmentation of the GPT2 (vocab_size=50257). After the data processing, there are totally 12966 Chinese chars in the dataset, and this number is chosen to be the vocab_size in the output layer.
+Note that the vocab_size of the final output layer is the total number of all chars in the Chinese potery dataset which is different from the standard implmentation of the GPT2 (`vocab_size=50257`). After the data processing, there are totally 12966 Chinese chars in the dataset, and this number is chosen to be the vocab_size in the output layer.
 
 ## Model training
-It takes around 1 hour for finishing the model training on 5 epochs on an RTX 4070 (12G VRAM) GPU. The final evaluation loss is 3.8169.
+It takes around 1 hour for finishing the model training on 5000 iters on an RTX 4070 (12G VRAM) GPU. The `val_loss` has been tracked for each 1000 iters and  is ploted on the following figure. 
+
+The final training result is `3.34` and the evaluation loss is `3.8169`.
 
 ![](assests/val_loss.png)
-
-## Model scaling
-The model can be scaled to a larger size with a larger block_size and n_embd. This will be a TODO in the future.
