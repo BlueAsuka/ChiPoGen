@@ -10,6 +10,8 @@ import os
 from easydict import EasyDict
 
 
+print("Data preparing...")
+
 data_dir = 'data'
 with open(os.path.join(data_dir, 'poetry.txt'), encoding='utf-8') as f:
     poetry_text = f.read()

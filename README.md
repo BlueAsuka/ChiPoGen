@@ -28,12 +28,16 @@ First initialize all folders for model training
 
     python init.py
 
+Then prepare for the data including tokenlization, train-val dataset spliting and saving the poetry training and valuating dataset to a binary file
+
+    python preparation.py
+
 For training the model, configurate the two files in the `configs`:
 
 - `model.json`: the hyperparameters of the model architecture
 - `train.json`: the hyperparameters of the model training
 
-Then you have to login to the [wandb](https://wandb.ai/site) for training logging, or you can set `wandb_log=False` in the `train.py` (I place the variable in the beginning of the whole training script which is easy for targeting at) to disable the wandb logging. (*Sorry for asking you to directly edit the source code which is commonly annoying*)
+Then you have to login to the [wandb](https://wandb.ai/site) for training logging. If you are the first time for training, then the logging interface will be triggered in the command line and you will require an API key of the wandb for logging. Or you can set `wandb_log=False` in the `train.py` (I place the variable in the beginning of the whole training script which is easy for targeting at) to disable the wandb logging. (*Sorry for asking you to directly edit the source code which is commonly annoying*)
 
 Then run the following command on the command line to start model training:
 
