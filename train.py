@@ -18,32 +18,28 @@ import torch
 import torch.nn as nn
 
 
-# 'scratch' : training from scratch
-# 'resume'  : resume training from a checkpoint
-init_from = 'scratch' 
-
-# create a checkpoints and params dir for internal or final result saving
-checkpoints_dir = 'checkpoint'
+configs_dir = 'configs'
+data_dir = 'data'
+checkpoint_dir = 'checkpoint'
 params_dir = 'params'
-if not os.path.exists(checkpoints_dir):
-    os.makedirs(checkpoints_dir)
-if not os.path.exists(params_dir):
-    os.makedirs(params_dir)
+wandb_log = True
 
 
 #==================================
 # Read all configurations files
-with open('config/model.json') as f:
+with open(os.path.join(configs_dir, 'model.json')) as f:
     model_config = json.load(f)
 model_config = EasyDict(model_config)
 
-with open('config/train.json') as f:
+with open(os.path.join(configs_dir, 'train.json')) as f:
     train_config = json.load(f)
-    
-run = wandb.init(
-    project='ChiPoGen',
-    config=train_config
-)
+
+# initialize the wandb    
+if wandb_log:
+    run = wandb.init(
+        project='ChiPoGen',
+        config=train_config
+    )
 
 train_config = EasyDict(train_config)
 
@@ -65,9 +61,10 @@ torch.backends.cudnn.allow_tf32 = True # allow tf32 on cudnn
 
 #===============================
 # loading data
-train_data = np.memmap('../data/train.bin', dtype=np.uint16, mode='r')
-val_data = np.memmap('../data/val.bin', dtype=np.uint16, mode='r')
+train_data = np.memmap(os.path.join(data_dir, 'train.bin'), dtype=np.uint16, mode='r')
+val_data = np.memmap(os.path.join(data_dir, 'val.bin'), dtype=np.uint16, mode='r')
 
+# get batch from the data
 def get_batch(split):
     data = train_data if split == 'train' else val_data
     
@@ -88,16 +85,18 @@ def get_batch(split):
 iter_num = 0
 temp_val_loss = 1e9
 
-# define model and optimization
+# define model and optimization, use the init_from to control 
+# 'scratch' : training from scratch
+# 'resume'  : resume training from a checkpoint
 gpt_model = GPT(model_config)
-if init_from == 'scratch':
+if train_config.init_from == 'scratch':
     # from scratch
     print('Initializing a new model from scratch')
-elif init_from == 'resume':
+elif train_config.init_from == 'resume':
     # from existed checkpoint file
-    ckpt_path = os.path.join(checkpoints_dir, 'ckpt.pt')
+    ckpt_path = os.path.join(checkpoint_dir, 'ckpt.pt')
     assert os.path.exists(ckpt_path), "The checkpoint dir is not exist, please train the model from scratch"
-    print(f'Resuming training from {checkpoints_dir}')
+    print(f'Resuming training from {checkpoint_dir}')
     checkpoint = torch.load(ckpt_path, map_location=device)
     gpt_model.load_state_dict(checkpoint['model'])
     iter_num = checkpoint['iter_num']
@@ -136,7 +135,7 @@ def configure_optimizers(model, weight_decay, learning_rate, betas, device_type)
 
 optimizer = configure_optimizers(gpt_model, train_config.weight_decay, train_config.learning_rate, 
                                 (train_config.beta1, train_config.beta2), device_type=device)
-if init_from == 'resume':
+if train_config.init_from == 'resume':
     # load the optimizer from the existed checkpoint file
     optimizer.load_state_dict(checkpoint['optimizer'])
 checkpoint = None
@@ -214,9 +213,10 @@ while True:
         print(Style.RESET_ALL)
         
         # Use wandb to log the process
-        wandb.log({
-            "val/loss": losses['val'],
-        })        
+        if wandb_log:
+            wandb.log({
+                "val/loss": losses['val'],
+            })        
         
         # save the current result to the checkpoints
         temp_val_loss = losses['val'] # update the val loss
@@ -228,8 +228,8 @@ while True:
                 'temp_val_loss': temp_val_loss,
                 'config': model_config,
             }
-            print(f'saving checkpoint to {checkpoints_dir}')
-            torch.save(checkpoint, os.path.join(checkpoints_dir, 'ckpt.pth'))
+            print(f'saving checkpoint to {checkpoint_dir}')
+            torch.save(checkpoint, os.path.join(checkpoint_dir, 'ckpt.pth'))
             print('Done')
         
     for micro_step in range(train_config.gradient_accumulation_steps):
@@ -264,12 +264,13 @@ while True:
             # mfu = estimate_mfu(gpt_model, model_config.batch_size * train_config.gradient_accumulation_steps, dt)
             # running_mfu = mfu if running_mfu == -1.0 else 0.9 * running_mfu + 0.1 * mfu
         # print(f"iter {iter_num}: loss {lossf:.4f}, time {dt*1000:.2f}ms, mfu {running_mfu*100:.2f}%")
-        print(f"iter {iter_num}: loss {lossf:.4f}, time {dt:.2f}s")
+        print(f"iter {iter_num}: loss {lossf:.4f}, time {dt*train_config.log_interval:.2f}s")
         
         # log the training loss
-        wandb.log({
-            "train/loss": lossf,
-        })    
+        if wandb_log:
+            wandb.log({
+                "train/loss": lossf,
+            })    
         
     # update iters num
     iter_num += 1

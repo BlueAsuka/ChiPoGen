@@ -3,7 +3,7 @@ Full definition of a GPT Language Model, all of it in this single file.
 References:
 1) the nanoGPT developed by karpathy Andrej:
 https://github.com/karpathy/nanoGPT/blob/master/model.py
-Remove the DDP part 
+Remove the DDP part
 """
 
 import math

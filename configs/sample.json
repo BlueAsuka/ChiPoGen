@@ -1,5 +1,4 @@
 {
-    "init_from": "resume",
     "start": "\n",
     "num_samples": 10,
     "max_new_tokens": 500,

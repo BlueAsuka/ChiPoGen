@@ -3,6 +3,7 @@ import json
 import pickle
 from contextlib import nullcontext
 from easydict import EasyDict
+from colorama import Fore, Style
 
 import torch
 import torch.nn.functional as F
@@ -12,29 +13,36 @@ sys.path.append('../')
 from model import GPT
 
 
+# ===============================
 # The file path for reading configuration files and trained weights
-sample_config_file = 'config/sample.json'
-model_config_file = 'config/model.json'
-tokens_file = 'data/tokens/tokens.pkl'
-params_file = 'params/chipogen_model.pth'
+configs_dir = 'configs'
+data_dir = 'data'
+params_dir = 'params'
 save_dir = 'out'
 if_save = True
+if_seed = True # reproduciable
+if_prompt = True # if not prompt then input from the console, else read from the sample.json default is '\n'
 
+
+# =================================
 # Read model, sampling and tokens files
-with open(sample_config_file, 'r') as f:
+with open(os.path.join(configs_dir, 'sample.json'), 'r') as f:
     sample_config = json.load(f)
 sample_config = EasyDict(sample_config)
 
-with open(model_config_file, 'r') as f:
+with open(os.path.join(configs_dir, 'model.json'), 'r') as f:
     model_config = json.load(f)
 model_config = EasyDict(model_config)
 
-with open(tokens_file, 'rb') as f:
+with open(os.path.join(data_dir, 'tokens.pkl'), 'rb') as f:
     tokens = pickle.load(f)
 
-# configurate for generation
-torch.manual_seed(sample_config.seed)
-torch.cuda.manual_seed(sample_config.seed)
+
+# ============================
+# configurate for generation 
+if if_seed:
+    torch.manual_seed(sample_config.seed)
+    torch.cuda.manual_seed(sample_config.seed)
 torch.backends.cuda.matmul.allow_tf32 = True # allow tf32 on matmul
 torch.backends.cudnn.allow_tf32 = True # allow tf32 on cudnn
 
@@ -44,8 +52,22 @@ device_type = 'cuda' if 'cuda' in device else 'cpu' # for later use in torch.aut
 ptdtype = {'float32': torch.float32, 'bfloat16': torch.bfloat16, 'float16': torch.float16}[dtype]
 ctx = nullcontext() if device_type == 'cpu' else torch.amp.autocast(device_type=device_type, dtype=ptdtype)
 
+
+# =============================
 # Load the trained model params 
-checkpoint = torch.load(params_file, map_location=device)
+# list all .pth/.pt files in the params folder
+pth_count = 0
+for file in os.listdir(params_dir):
+    if file.endswith('.pth') or file.endswith('.pt'):
+        print(Fore.GREEN + file)
+        pth_count += 1
+        print(Style.RESET_ALL)
+if pth_count > 0:
+    print(f"{pth_count} .pth/.pt found, can be used for generation, select one for generation: ", end='')
+else:
+    print("No avaliable .pth file for generation.")
+checkpoint_file = input()
+checkpoint = torch.load(os.path.join(params_dir, checkpoint_file), map_location=device)
 gpt_model = GPT(model_config)
 state_dict = checkpoint['model']
 gpt_model.load_state_dict(state_dict)
@@ -59,8 +81,15 @@ decode = lambda l: ''.join([itos[i] for i in l])
 
 # encode the start char defined in the sample configuration files '/n'
 start_ids = encode(sample_config.start)
-x = torch.tensor(start_ids, dtype=torch.long, device=device).view(-1, 1)
+if if_prompt:
+    print("input for prompting: ", end='')
+    prompt = input()
+    x = torch.tensor(encode(prompt), dtype=torch.long, device=device).view(-1, 1)
+else:    
+    x = torch.tensor(start_ids, dtype=torch.long, device=device).view(-1, 1)
 
+
+# =============================
 # define the generation method
 gpt_model.eval()
 @torch.no_grad()
@@ -88,18 +117,15 @@ print('Chinese poetry generating...')
 with torch.no_grad():
     with ctx:
         y = generate(gpt_model, x, 
-                         sample_config.max_new_tokens, 
-                         sample_config.temperature,
-                         sample_config.top_k)
+                     sample_config.max_new_tokens, 
+                     sample_config.temperature,
+                     sample_config.top_k)
         ids = y[0].tolist()
         res = decode(ids)
         print(res)
 
 # save the generated text
 if if_save:
-    # check whether the saving folder exists
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
     print('Saving the generted text...')
     with open(os.path.join(save_dir, 'generated_poetry.txt',), 'w', encoding='utf-8') as f:
         f.write(res) 
