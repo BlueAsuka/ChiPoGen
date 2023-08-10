@@ -1,8 +1,8 @@
 {
     "learning_rate": 6e-4,
-    "max_iters": 5500,
-    "lr_decay_iters": 5000,
     "min_lr": 6e-5,
+    "max_iters": 6000,
+    "lr_decay_iters": 6000,
     "weight_decay": 1e-1,
     "beta1": 0.9,
     "beta2": 0.95,

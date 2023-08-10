@@ -17,12 +17,11 @@ from colorama import Fore, Style
 import torch
 import torch.nn as nn
 
-
+wandb_log = True
 configs_dir = 'configs'
 data_dir = 'data'
 checkpoint_dir = 'checkpoint'
 params_dir = 'params'
-wandb_log = True
 
 
 #==================================

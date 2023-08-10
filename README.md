@@ -17,19 +17,25 @@ The main project is developed on Windows 10.0 with a CUDA capable GPU and still 
 - RTX 4070
 
 ## Setting up
-For this project, use `conda` to create a virtual environment for packages management. Run the following commands for the virtual environment setting up. 
+For this project, use `conda` to create a virtual environment for packages management. Run the following commands for the virtual environment setting up. Note that the project use `torch.amp` and pytorch version > 1.6 should be fine for running the mixture precision training and inference as mentioned in the [pytorch tutorial](https://pytorch.org/docs/stable/amp.html)
 
     conda create -n chipogen python=3.10
     conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
     pip install -r requirments.txt
 
 ## Running
+First initialize all folders for model training
+
+    python init.py
+
 For training the model, configurate the two files in the `configs`:
 
 - `model.json`: the hyperparameters of the model architecture
 - `train.json`: the hyperparameters of the model training
 
-Then run the following command on the command line for model training:
+Then you have to login to the [wandb](https://wandb.ai/site) for training logging, or you can set `wandb_log=False` in the `train.py` (I place the variable in the beginning of the whole training script which is easy for targeting at) to disable the wandb logging. (*Sorry for asking you to directly edit the source code which is commonly annoying*)
+
+Then run the following command on the command line to start model training:
 
     python train.py
 
@@ -41,7 +47,7 @@ The output result will be saved as a .txt file in the new folder `out`.
 
 
 ## Model details
-The model uses a standard decoder-only transformer [GPT2](https://paperswithcode.com/paper/language-models-are-unsupervised-multitask) with the following hyperparameters. The total number of model parameters is `26.22` million.
+The model uses a standard decoder-only transformer [GPT2](https://paperswithcode.com/paper/language-models-are-unsupervised-multitask) with the following hyperparameters. The total number of model parameters is `26.22` million. (you can play with other configurations)
 
     "batch_size": 12,
     "block_size": 128,
@@ -50,11 +56,13 @@ The model uses a standard decoder-only transformer [GPT2](https://paperswithcode
     "n_head" : 12,
     "n_layer": 12
     
-Note that the vocab_size of the final output layer is the total number of all chars in the Chinese potery dataset which is different from the standard implmentation of the GPT2 (`vocab_size=50257`). After the data processing, there are totally 12966 Chinese chars in the dataset, and this number is chosen to be the vocab_size in the output layer.
+Note that the vocab_size of the final output layer is the total number of all chars in the Chinese potery dataset which is different from the standard implmentation of the GPT2 (`vocab_size=50257`). After the data processing, there are totally `12966` Chinese chars in the dataset, and this number is chosen to be the vocab_size in the output layer.
 
 ## Model training
-It takes around 1 hour for finishing the model training on 5000 iters on an RTX 4070 (12G VRAM) GPU. The `val_loss` has been tracked for each 1000 iters and  is ploted on the following figure. 
+It takes around 1 hour for finishing the model training on 5000 iters on an RTX 4070 (12G VRAM) GPU. During the training, the VRAM usage is around `2.5G`, which is a reference to indicate how much VRAM is required for scaling to a larger model. 
 
-The final training result is `3.34` and the evaluation loss is `3.8169`.
+The `val_loss` has been tracked for each 1000 iters and  is ploted on the following figure. 
+
+The final `train_loss` is `3.34` and the evaluation `val_loss` is `3.8169`.
 
 ![](assests/val_loss.png)
