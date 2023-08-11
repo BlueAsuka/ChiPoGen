@@ -21,7 +21,7 @@ params_dir = 'params'
 save_dir = 'out'
 if_save = True
 if_seed = True # reproduciable
-if_prompt = True # if not prompt then input from the console, else read from the sample.json default is '\n'
+if_prompt = False # if not prompt then input from the console, else read from the sample.json default is '\n'
 
 
 # =================================
@@ -67,9 +67,8 @@ if pth_count > 0:
 else:
     print("No avaliable .pth file for generation.")
 checkpoint_file = input()
-checkpoint = torch.load(os.path.join(params_dir, checkpoint_file), map_location=device)
+state_dict = torch.load(os.path.join(params_dir, checkpoint_file), map_location=device)
 gpt_model = GPT(model_config)
-state_dict = checkpoint['model']
 gpt_model.load_state_dict(state_dict)
 gpt_model.to(device)
 

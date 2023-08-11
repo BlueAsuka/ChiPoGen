@@ -1,8 +1,8 @@
 {
     "batch_size": 12,
-    "block_size": 256,
+    "block_size": 384,
     "vocab_size": 12966,
-    "n_embd" : 448,
+    "n_embd" : 576,
     "n_head" : 12,
     "n_layer": 12,
     "dropout": 0.0 
