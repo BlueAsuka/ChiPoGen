@@ -11,10 +11,10 @@ Some generation samples are shown in the following figure:
 ![](assests/poetry_generated_sample.PNG)
 
 ## Environment
-The main project is developed on Windows 10.0 with a CUDA capable GPU and still no testing on other OS such as MacOS or Linux. (Suppose there is a merely slight modification for making the model to run on the Linux with GPU, but may require some heavy magic work for MacOS)
+The main project is developed on Windows 10.0 with a CUDA capable GPU (RTX 4070) and still no testing on other OS such as MacOS or Linux. (Suppose there is a merely slight modification for making the model to run on the Linux with GPU, but may require some heavy magic work for MacOS)
 - Windows 10.0
 - python 3.10
-- RTX 4070
+- CUDA capable GPU
 
 ## Setting up
 For this project, use `conda` to create a virtual environment for packages management. Run the following commands for the virtual environment setting up. Note that the project use `torch.amp` and pytorch version > 1.6 should be fine for running the mixture precision training and inference as mentioned in the [pytorch tutorial](https://pytorch.org/docs/stable/amp.html). Pytorch 2.0+ is encouraged since the AdamW optimizer can use the fused CUDA version which is typically faster than the for-loop, single-tensor implementation.
