@@ -63,10 +63,20 @@ The model uses a standard decoder-only transformer [GPT2](https://paperswithcode
 Note that the vocab_size of the final output layer is the total number of all chars in the Chinese potery dataset which is different from the standard implmentation of the GPT2 (`vocab_size=50257`). After the data processing, there are totally `12966` Chinese chars in the dataset, and this number is chosen to be the vocab_size in the output layer.
 
 ## Model training
-It takes around 1 hour for finishing the model training on 5000 iters on an RTX 4070 (12G VRAM) GPU. During the training, the VRAM usage is around 2.5G, which is a reference to indicate how much VRAM is required for scaling to a larger model. The `block_size` and `batch_size` can affect the memory usage, while the `n_embd` take the majority response to the model size.
+It takes around 1 hour for finishing the model training on 5000 iters on an RTX 4070 (12G VRAM) GPU. During the training, the VRAM usage is around 2.5G, which is a reference to indicate how much VRAM is required for scaling to a larger model. The `block_size` and `batch_size` can affect the memory usage, while the `n_embd` take the majority response to the model size. As a result, the final `train_loss` is 3.34.
 
-The `val_loss` has been tracked for each 1000 iters and  is ploted on the following figure. 
 
-The final `train_loss` is 3.34 and the evaluation `val_loss` is 3.8169.
+## Model scaling
+The model can be scaled to a larger size with following configuration, the total number of the model is ~`55M`, and it takes up to 8.9G VRAM usage for training. The final `train_loss` can be down to 2.514.
 
-![](assests/val_loss.png)
+    "batch_size": 12,
+    "block_size": 384,
+    "vocab_size": 12966,
+    "n_embd" : 576,
+    "n_head" : 12,
+    "n_layer": 12,
+    "dropout": 0.0 
+
+The following figure shows the `train_loss` trend during the model training
+
+![](assests/55M_train_loss.png)
