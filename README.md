@@ -80,3 +80,10 @@ The model can be scaled to a larger size with following configuration, the total
 The following figure shows the `train_loss` trend during the model training
 
 ![](assests/55M_train_loss.png)
+
+## TODO List
+- [ ] Add more Chinese poetry styles and types 
+- [ ] Tokenization 
+- [ ] Better components like group-query multi-head attention, RoPE position encoding and so on.
+- [ ] Fine-tune the model with better command understanding and following
+- [ ] RLHF or DPO for better generation
